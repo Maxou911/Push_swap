@@ -146,7 +146,6 @@ ARG="3 1 2 5 4" ; ./push_swap $ARG | ./checker $ARG
 ```
 
 ---
-```
 
 ---
 
