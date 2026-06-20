@@ -70,32 +70,65 @@ make
 
 ---
 
-## ⚙️ Algorithm
+⚙️ Algorithm
 
-### Small stacks (≤ 5 elements)
+Small stacks (≤ 5 elements)
 
-- **2 elements** — one `sa` if needed
-- **3 elements** — hardcoded decision tree (at most 2 operations)
-- **5 elements** — push 2 elements to B, sort 3 in A, then reinsert from B
 
-### Large stacks (> 5 elements) — Turk Algorithm
+2 elements — one sa if needed
+3 elements — hardcoded decision tree (at most 2 operations)
+5 elements — push 2 elements to B, sort 3 in A, then reinsert from B
 
-The main algorithm used is the **Turk / Cost-based greedy algorithm**:
 
-1. **Push all but 3 elements** from A to B in a semi-sorted order (chunks or cheapest cost)
-2. **Sort the remaining 3** elements in A
-3. **Re-insert each element** from B to A at the cheapest possible position, combining rotations (`rr`, `rrr`) when beneficial
-4. **Rotate A** to bring the minimum element to the top
+Large stacks (> 5 elements) — Radix Sort
 
-#### Cost Calculation
+The main algorithm used is a binary Radix Sort, adapted to work with the two-stack constraint.
 
-For each element in B, calculate the **total cost** to:
-- Bring that element to the top of B
-- Bring its target position to the top of A
+Principle
 
-Pick the element with the **lowest combined cost** and execute the move.
+Instead of sorting by value directly, each element is first replaced by its index (rank compression), so values range from 0 to n-1. Sorting is then done bit by bit, from the least significant bit (LSB) to the most significant bit (MSB).
 
----
+Steps
+
+Index compression — replace each value with its sorted rank (0 to n-1)
+For each bit position (from LSB to MSB):
+
+Iterate over all elements in A
+If the current bit of the element is 0 → pb (push to B)
+If the current bit is 1 → ra (rotate, keep in A)
+Once all elements are processed → pa all elements back from B to A
+
+
+After log2(n) passes, stack A is fully sorted
+
+
+Example (simplified)
+
+Initial (indexed): A = [2, 0, 3, 1]  B = []
+
+Pass 1 (bit 0):
+  2 (10) → bit 0 = 0 → pb
+  0 (00) → bit 0 = 0 → pb
+  3 (11) → bit 0 = 1 → ra
+  1 (01) → bit 0 = 1 → ra
+  → pa, pa
+  A = [0, 2, 1, 3]
+
+Pass 2 (bit 1):
+  0 (00) → bit 1 = 0 → pb
+  2 (10) → bit 1 = 1 → ra
+  1 (01) → bit 1 = 0 → pb
+  3 (11) → bit 1 = 1 → ra
+  → pa, pa
+  A = [0, 1, 2, 3] ✅
+
+Why Radix?
+
+
+Simple and predictable: O(n × log2(n)) operations
+No complex cost calculation
+Consistent performance regardless of input order
+
 
 ## 📊 Performance
 
